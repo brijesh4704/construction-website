@@ -1,16 +1,23 @@
 <?php 
 session_start();
 error_reporting(0);
-$siteUrl='http://'.$_SERVER['HTTP_HOST'].'/bproject';
+
+/* Correct URL for Render */
+$siteUrl = 'https://' . $_SERVER['HTTP_HOST'];
+
 $SiteTitle = "construction";
-// Database connection
-$dbhost = 'localhost';
+
+/* Railway MySQL connection */
+
+$dbhost = 'tramway.proxy.rlwy.net';
 $dbuser = 'root';
-$dbpass = '';
-$dbname = 'phone_book_db';
+$dbpass = 'dgOrnARudhMgGwYfspmxqWgYTesFFOWO';
+$dbname = 'railway';
+$dbport = '33492';
 
-$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport);
 
-if(!$conn) {
-	die('Database Connection Error!');
+if(!$conn){
+    die('Database Connection Error: ' . mysqli_connect_error());
 }
+?>
