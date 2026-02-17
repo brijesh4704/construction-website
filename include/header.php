@@ -1,43 +1,80 @@
 <?php
+session_start();
 include 'config/config.php';
-$sql = mysqli_query($conn, "SELECT * FROM user_registration WHERE email='$email'");
-$result = mysqli_fetch_array($sql);
+
+/* ------------------------------
+   FIX: Undefined $email variable
+--------------------------------*/
+$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+$user = null;
+
+if($email != ''){
+    $stmt = mysqli_prepare($conn, "SELECT * FROM user_registration WHERE email=?");
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+}
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $SiteTitle;?></title>
-    <!--bootstap library-->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-   <!--local library--> 
- <link rel="stylesheet" href="public/assest/css/style.css">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
+    <title><?php echo $SiteTitle; ?></title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="public/assest/css/style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
+
 <body>
-    <div class="container">
-    <header class="header">
-         <a href="#" id="logo">Construction
- <img src="public/assest/images/logo.png"width="100"></a>
-<navbar class="nav nav-expand-lg">
-            <a href="index.php">home</a>
-            <a href="gallary.php">gallery</a>
-            <a href="about.php">about</a>
-            <a href="#">blog</a>
-            <a href="#">contact</a>
-        </navbar>
-         <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-              <form class="d-flex">
-                <a href="contact-us.php" class="btn btn-lg btn-warning">contact us</a>
-            </form>
-        </div>
-      </header>
+<div class="container">
 
+<header class="header">
 
+    <a href="index.php" id="logo">
+        Construction
+        <img src="public/assest/images/logo.png" width="100">
+    </a>
 
+    <nav class="nav nav-expand-lg">
+        <a href="index.php">Home</a>
+        <a href="gallary.php">Gallery</a>
+        <a href="about.php">About</a>
+        <a href="#">Blog</a>
+        <a href="contact-us.php">Contact</a>
+    </nav>
+
+    <!-- Right Side -->
+    <div class="d-flex align-items-center gap-2">
+
+        <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+
+        <?php if($user){ ?>
+            <!-- Logged in -->
+            <span class="text-success fw-bold">
+                Welcome, <?php echo htmlspecialchars($user['name']); ?>
+            </span>
+
+            <a href="logout.php" class="btn btn-danger">Logout</a>
+
+        <?php } else { ?>
+            <!-- Not logged in -->
+            <a href="login.php" class="btn btn-primary">Login</a>
+            <a href="register.php" class="btn btn-warning">Register</a>
+        <?php } ?>
+
+    </div>
+
+</header>
